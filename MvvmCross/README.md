@@ -49,6 +49,9 @@ public class City
 ```
 
 22. Add a new class under the ViewModels folder. Call it `CitiesViewModel`. Make the class public, make it inherit from `MvxViewModel` and define a `MvxObservableCollection<City>` property called `Cities`. Initialize the Cities property as a new empty collection by default.
+
+Note: What is an Observable Collection? It's a very special type of list that will fire changes every time an operation like add, delete, reset or move is run on the list. You can read more about it in the [official](https://docs.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.observablecollection-1?view=netframework-4.7.2) Microsoft documentation. The Mvx version has a few improvements and assumptions (the MvvmCross implementation is optional).
+
 23. Override the `Initialize` method and add some mock items to the list. You can take the following list as an example:
 
 ```c#
@@ -137,6 +140,8 @@ public class CitiesView : BaseFragment<CitiesViewModel>
 }
 ```
 
+Note: We are going to ask the ViewPresenter to display CitiesView as a fragment in the FrameLayout with ID = content_frame.
+
 34. For this exercise we will use the RecyclerView component. Please install the NuGet package `MvvmCross.Droid.Support.V7.RecyclerView` in your Android project only.
 35. Add a new Android Layout within the `Resources\Layout` folder. Call it `CitiesView.axml`.
 36. Add a `MvxRecyclerView` widget to your .axml layout (inside the default provided `LinearLayout`):
@@ -148,7 +153,7 @@ public class CitiesView : BaseFragment<CitiesViewModel>
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <MvxRecyclerView
+    <mvvmcross.droid.support.v7.recyclerview.MvxRecyclerView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 </LinearLayout>
@@ -179,7 +184,13 @@ We will define a LinearLayout ViewGroup and a single TextView. Feel free to cust
 
 38. Set the same content for the two recently created layouts. Just make sure you use different text colors, so that you can tell the difference in runtime.
 39. Make sure you add a binding statement to your TextView in the item layouts (if you used the example above, it's already there). We want to bind the text of the TextView to the Name of the City we are displaying.
+
+Note: It is highly recommended that if Data-Binding is new to you, you spend a couple of minutes reading the [official documentation](https://www.mvvmcross.com/documentation/fundamentals/data-binding) of MvvmCross for bindings (only the first parts).
+
 40. We have finished the necessary work for the RecyclerView row templates. The next thing we want to do is to add a template selector, so that the RecyclerView knows which row template to use for each case.
+
+Note: Actually, the internal Adapter is going to use the template selector, not the RecyclerView widget.
+
 41. Add a new folder to the Android project and call it `TemplateSelectors`. Then add a new class named `CitiesTemplateSelector`.
 42. Make the class public and make it implement the `IMvxTemplateSelector` interface. Implement the necessary methods. In the `GetItemLayoutId` you can just return the parameter that arrives to the method - we don't really need to use that method.
 43. For the `GetItemViewType` method, first cast the object parameter to a `City` object and then depending on whether the city is a capital or not, return the correct Layout ID.
@@ -229,3 +240,16 @@ The final version of the CitiesView.axml layout file is:
 ```
 
 47. At this point we have finished the work. Run the app!
+
+Where to go from there? Extra step:
+
+48. Let's use a ValueConverter in one of our row styles!
+49. Create a new folder in the Core project named `Converters`
+50. Add a new class within that folder, call it `CapitalTextToUpperConverter`
+51. Make the class public and make it inherit from `MvxValueConverter`.
+52. Override the Convert method and change the return statement so that it returns `value.ToString().ToUpper();`.
+53. Use the converter. Open `item_capital.axml` and change the data binding sentence so that the path for the binding is `CapitalTextToUpper(Name)`.
+
+Note: Does MvvmCross automatically register my converters in the Data-Binding engine? Yes! You can turn this feature off, but it will do it by default.
+
+54. Run the app!
